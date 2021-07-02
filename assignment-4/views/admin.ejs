@@ -1,0 +1,8 @@
+<%- include('includes/head.ejs') %>
+    <h1> Welcome to admin page</h1>
+    <form action="/admin/add-user" method="post" >
+        <label for="name">Your name: </label>
+        <input type="text" id="name" name="name">
+        <button type="submit"> Add name</button>
+    </form>
+<%- include('includes/end.ejs') %>

@@ -1,0 +1,15 @@
+<%- include('includes/head.ejs') %>
+
+    <div class="admin">
+        <h1>Welcome to user page</h1>
+        <ul>
+            <% for (const d of data) { %>
+                <li>
+                    <p>Ten cua ban la: <%= d.name %></p>
+                </li>
+            <%  } %>
+
+        </ul>
+    </div>
+
+<%- include('includes/end.ejs') %>

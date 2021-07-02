@@ -1,0 +1,22 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body,
+h1 {
+  text-align: center;
+}
+
+.gif-vscode {
+  height: 120vh;
+  width: 100%;
+}
+
+.gif-vscode,
+iframe {
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
+}
