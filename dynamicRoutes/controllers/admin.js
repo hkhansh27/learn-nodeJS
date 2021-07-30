@@ -57,6 +57,8 @@ exports.getProducts = (req, res, next) => {
   });
 };
 
-exports.postDeleteProduct = (req, res, next) => {
+exports.postDeleteProduct = async (req, res, next) => {
   const productId = req.body.productId;
+  await Product.deleteById(productId);
+  res.redirect("/admin/products");
 };
