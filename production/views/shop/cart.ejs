@@ -7,16 +7,25 @@
             <% if(products.length > 0) { %>
                 <ol>
                     <% products.forEach(product => { %>
-                        <li>
-                            <p><%= product.title %> (<%= product.cartItem.quantity %>)</p>
-                            <form action="/cart-delete-item" method="POST">
+                        <li class= "card__order">
+                            <p><span>Product:</span><%= product.title %></p>
+                            <p><span>Quantity:</span><%= product.cartItem.quantity %></p>
+                            <form action="/cart-delete-item" method="POST" class="card__order--form">
                                 <input type="hidden" name="productId" value="<%= product.id %>">
-                                <button class="btn" type="submit">Delete</button>
+                                <button class="btn--danger " type="submit">Delete</button>
                             </form>
+
                         </li>
-                        <hr>
+
                     <% })  %>
                 </ol>
+
+                <div class="centered">
+                    <form action="/create-order" method="POST">
+                        <button class="btn" type="submit">Order Now!</button>
+                    </form>
+                </div
+
             <% } else { %>
                 <h1>No product in cart</h1>
             <% } %>

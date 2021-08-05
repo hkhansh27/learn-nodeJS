@@ -193,6 +193,24 @@ form {
   color: white;
 }
 
+.btn--danger {
+  display: inline-block;
+  padding: 0.25rem 1rem;
+  text-decoration: none;
+  font: inherit;
+  border: 1px solid #df1515;
+  color: #df1515;
+  background: white;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.btn--danger:hover,
+.btn--danger:active {
+  background-color: #df1515;
+  color: white;
+}
+
 .centered {
   text-align: center;
 }
@@ -203,6 +221,31 @@ form {
 
 .image img {
   height: 100%;
+}
+
+.card__order {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+}
+
+.card__order--form {
+  display: flex;
+  align-items: center;
+}
+
+.card__order p,
+span {
+  font-size: 1.5rem;
+  font-weight: 900;
+  padding-right: 1rem;
+}
+
+.card__order p {
+  font-weight: 500;
+  max-width: 20rem;
 }
 
 @media (min-width: 768px) {

@@ -1,5 +1,4 @@
 const Product = require('../models/product');
-const Cart = require('../models/cart');
 
 exports.getProducts = async (req, res, next) => {
   try {
@@ -57,12 +56,12 @@ exports.getCart = async (req, res, next) => {
 
 exports.postCart = (req, res, next) => {
   const { productId } = req.body;
-  let product, fetchCart;
+  let product, fetchedCart;
   let newQuantity = 1;
   req.user
     .getCart()
     .then(cart => {
-      fetchCart = cart;
+      fetchedCart = cart;
       return cart.getProducts({ where: { id: productId } }); //products table
     })
     .then(products => {
@@ -74,7 +73,7 @@ exports.postCart = (req, res, next) => {
       return Product.findByPk(productId);
     })
     .then(product => {
-      fetchCart.addProduct(product, { through: { quantity: newQuantity } });
+      fetchedCart.addProduct(product, { through: { quantity: newQuantity } });
       res.redirect('/cart');
     })
     .catch(error => console.log(error));
@@ -92,16 +91,39 @@ exports.postCartDeleteProduct = async (req, res, next) => {
   }
 };
 
-exports.getOrders = (req, res, next) => {
-  res.render('shop/orders', {
-    path: '/orders',
-    pageTitle: 'Your Orders',
-  });
+exports.getOrders = async (req, res, next) => {
+  try {
+    const orders = await req.user.getOrders({ include: ['products'] }); //Eager loading
+    res.render('shop/orders', {
+      path: '/orders',
+      pageTitle: 'Your Orders',
+      orders,
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
-exports.getCheckout = (req, res, next) => {
-  res.render('shop/checkout', {
-    path: '/checkout',
-    pageTitle: 'Checkout',
-  });
+exports.postOrder = (req, res, next) => {
+  let fetchedCart;
+  req.user
+    .getCart()
+    .then(cart => {
+      fetchedCart = cart;
+      return cart.getProducts();
+    })
+    .then(products => {
+      return req.user.createOrder().then(order => {
+        //TODO: Understand this?
+        return order.addProducts(
+          products.map(product => {
+            product.orderItem = { quantity: product.cartItem.quantity };
+            return product;
+          })
+        );
+      });
+    })
+    .then(result => fetchedCart.setProducts(null))
+    .then(result => res.redirect('/orders'))
+    .catch(err => console.log(err));
 };
