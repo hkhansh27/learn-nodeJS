@@ -22,4 +22,6 @@ router.get('/orders', shopController.getOrders);
 
 router.post('/create-order', shopController.postOrder);
 
+router.post('/order-delete-all', shopController.postDeleteAllOrder);
+
 module.exports = router;

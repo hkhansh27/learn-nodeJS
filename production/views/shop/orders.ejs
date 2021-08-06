@@ -20,6 +20,11 @@
                         </li>
                     <% }); %>
                 </ol>
+                <div class= "card__order">
+                    <form action="/order-delete-all" method="POST">
+                        <button class="btn--danger " type="submit">Delete All</button>
+                    </form>
+                </div>
             <% } else {  %>
                 <h1>Nothing there!</h1>
             <% }; %>
