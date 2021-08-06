@@ -62,9 +62,12 @@ exports.postCart = (req, res, next) => {
     .getCart()
     .then(cart => {
       fetchedCart = cart;
-      return cart.getProducts({ where: { id: productId } }); //products table
+      return cart.getProducts({ where: { id: productId } }); //cartItem table
     })
     .then(products => {
+      //check if product is available in cartItem table
+      // first time postCart products, product variables will empty mean [] and undefined
+      // second time postCart it will be product itself
       if (products.length > 0) product = products[0];
       if (product) {
         oldQuantity = product.cartItem.quantity;
@@ -84,7 +87,7 @@ exports.postCartDeleteProduct = async (req, res, next) => {
     const { productId } = req.body;
     const cart = await req.user.getCart();
     const [product] = await cart.getProducts({ where: { id: productId } });
-    await product.cartItem.destroy(); //do not destroy product in products table but in-between table aka. caritems table
+    await product.cartItem.destroy(); //do not destroy product in products table but in-between table aka. carItem table
     res.redirect('/cart');
   } catch (error) {
     console.log(error);
