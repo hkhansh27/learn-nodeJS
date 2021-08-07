@@ -133,6 +133,10 @@ exports.postOrder = (req, res, next) => {
 };
 
 exports.postDeleteAllOrder = async (req, res, next) => {
-  await Order.destroy({ where: { id: req.user.id } });
-  return res.redirect('/orders');
+  try {
+    await Order.destroy({ where: { userId: req.user.id } });
+    return res.redirect('/orders');
+  } catch (error) {
+    console.log(error);
+  }
 };
