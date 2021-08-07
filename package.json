@@ -5,7 +5,9 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ./production/app.js"
+    "start": "nodemon ./production/app.js",
+    "onmysql": "brew services start mysql",
+    "offmysql": "brew services stop mysql"
   },
   "author": "",
   "license": "ISC",

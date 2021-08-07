@@ -1,3 +1,4 @@
+const Order = require('../models/order');
 const Product = require('../models/product');
 
 exports.getProducts = async (req, res, next) => {
@@ -75,10 +76,10 @@ exports.postCart = (req, res, next) => {
       }
       return Product.findByPk(productId);
     })
-    .then(product => {
-      fetchedCart.addProduct(product, { through: { quantity: newQuantity } });
-      res.redirect('/cart');
-    })
+    .then(product =>
+      fetchedCart.addProduct(product, { through: { quantity: newQuantity } })
+    )
+    .then(result => res.redirect('/cart'))
     .catch(error => console.log(error));
 };
 
@@ -132,6 +133,6 @@ exports.postOrder = (req, res, next) => {
 };
 
 exports.postDeleteAllOrder = async (req, res, next) => {
-  await req.user.setOrders(null);
+  await Order.destroy({ where: { id: req.user.id } });
   return res.redirect('/orders');
 };
