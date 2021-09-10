@@ -1,9 +1,9 @@
-const Order = require('../models/order');
+// const Order = require('../models/order');
 const Product = require('../models/product');
 
 exports.getProducts = async (req, res, next) => {
   try {
-    const products = await Product.findAll();
+    const products = await Product.fetchAll();
     res.render('shop/product-list', {
       prods: products,
       pageTitle: 'All Products',
@@ -30,7 +30,7 @@ exports.getProduct = async (req, res, next) => {
 
 exports.getIndex = async (req, res, next) => {
   try {
-    const products = await Product.findAll();
+    const products = await Product.fetchAll();
     res.render('shop/index', {
       prods: products,
       pageTitle: 'Shop',
@@ -43,8 +43,7 @@ exports.getIndex = async (req, res, next) => {
 
 exports.getCart = async (req, res, next) => {
   try {
-    const cart = await req.user.getCart();
-    const products = await cart.getProducts();
+    const products = await req.user.getCart();
     res.render('shop/cart', {
       path: '/cart',
       pageTitle: 'Your Cart',
@@ -55,40 +54,21 @@ exports.getCart = async (req, res, next) => {
   }
 };
 
-exports.postCart = (req, res, next) => {
-  const { productId } = req.body;
-  let product, fetchedCart;
-  let newQuantity = 1;
-  req.user
-    .getCart()
-    .then(cart => {
-      fetchedCart = cart;
-      return cart.getProducts({ where: { id: productId } }); //cartItem table
-    })
-    .then(products => {
-      //check if product is available in cartItem table
-      // first time postCart products, product variables will empty mean [] and undefined
-      // second time postCart it will be product itself
-      if (products.length > 0) product = products[0];
-      if (product) {
-        oldQuantity = product.cartItem.quantity;
-        newQuantity += oldQuantity;
-      }
-      return Product.findByPk(productId);
-    })
-    .then(product =>
-      fetchedCart.addProduct(product, { through: { quantity: newQuantity } })
-    )
-    .then(result => res.redirect('/cart'))
-    .catch(error => console.log(error));
+exports.postCart = async (req, res, next) => {
+  try {
+    const { productId } = req.body;
+    const product = await Product.findByPk(productId);
+    await req.user.addToCart(product);
+    res.redirect('/');
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 exports.postCartDeleteProduct = async (req, res, next) => {
   try {
     const { productId } = req.body;
-    const cart = await req.user.getCart();
-    const [product] = await cart.getProducts({ where: { id: productId } });
-    await product.cartItem.destroy(); //do not destroy product in products table but in-between table aka. carItem table
+    await req.user.deleteProductsFromCart(productId);
     res.redirect('/cart');
   } catch (error) {
     console.log(error);
