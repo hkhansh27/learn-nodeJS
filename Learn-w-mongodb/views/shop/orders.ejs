@@ -8,23 +8,18 @@
                 <ul style="list-style-type: none;">
                     <% orders.forEach((order) => { %>
                         <li >
-                            <h1><%= order.id %></h1>
+                            <h1><%= order._id %></h1>
                             <ul>
-                                <% order.products.forEach((product) => { %>
+                                <% order.items.forEach((product) => { %>
                                     <li class="card__order">
                                         <p><span>Product:</span><%= product.title %></p>
-                                        <p><span>Quantity:</span><%= product.orderItem.quantity %></p>
+                                        <p><span>Quantity:</span><%= product.quantity %></p>
                                     </li>
                                  <% }); %>
                             </ul>
                         </li>
                     <% }); %>
                 </ol>
-                <div class= "card__order">
-                    <form action="/order-delete-all" method="POST">
-                        <button class="btn--danger " type="submit">Delete All</button>
-                    </form>
-                </div>
             <% } else {  %>
                 <h1>Nothing there!</h1>
             <% }; %>

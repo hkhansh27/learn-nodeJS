@@ -66,6 +66,9 @@ exports.postCart = async (req, res, next) => {
 };
 
 exports.postCartDeleteProduct = async (req, res, next) => {
+  //FIXME: deleted a product which was part of the carts of different users
+  //but app works correctly
+  //TODO: implement "worker process" or an alternative is when fetching the cart, the mismatch in the fetched cart and cart in db. But now i have to work on my project :v hihi
   try {
     const { productId } = req.body;
     await req.user.deleteProductsFromCart(productId);
@@ -77,7 +80,7 @@ exports.postCartDeleteProduct = async (req, res, next) => {
 
 exports.getOrders = async (req, res, next) => {
   try {
-    const orders = await req.user.getOrders({ include: ['products'] }); //Eager loading
+    const orders = await req.user.getOrders();
     res.render('shop/orders', {
       path: '/orders',
       pageTitle: 'Your Orders',
@@ -88,34 +91,10 @@ exports.getOrders = async (req, res, next) => {
   }
 };
 
-exports.postOrder = (req, res, next) => {
-  let fetchedCart;
-  req.user
-    .getCart()
-    .then(cart => {
-      fetchedCart = cart;
-      return cart.getProducts();
-    })
-    .then(products => {
-      return req.user.createOrder().then(order => {
-        //TODO: Understand this?
-        return order.addProducts(
-          products.map(product => {
-            product.orderItem = { quantity: product.cartItem.quantity };
-            return product;
-          })
-        );
-      });
-    })
-    .then(result => fetchedCart.setProducts(null))
-    .then(result => res.redirect('/orders'))
-    .catch(err => console.log(err));
-};
-
-exports.postDeleteAllOrder = async (req, res, next) => {
+exports.postOrder = async (req, res, next) => {
   try {
-    await Order.destroy({ where: { userId: req.user.id } });
-    return res.redirect('/orders');
+    await req.user.addOrder();
+    res.redirect('/orders');
   } catch (error) {
     console.log(error);
   }

@@ -35,8 +35,6 @@ class User {
   }
 
   addToCart(product) {
-    console.log('Cart from addToCart function before add');
-    console.log(this.cart);
     let updatedCartItems = [];
     let newQuantity = 1;
     //check if cart is empty
@@ -122,6 +120,41 @@ class User {
         })
         .catch(err => console.log(err))
     );
+  }
+  addOrder() {
+    const db = getDb();
+    /*(1) I really don't care about that information changing because if it should change, for orders we need a snapshot anyways, if the price of a product changes, that doesn't affect the past order, so there we wouldn't want to update the price even if it would change.  We just want the snapshot */
+    return this.getCart()
+      .then(products => {
+        const order = {
+          items: products, // (1)
+          user: {
+            _id: new mongo.ObjectId(this._id),
+            name: this.name,
+          },
+        };
+        return db.collection('orders').insertOne(order);
+      })
+      .then(result => {
+        this.cart = { items: [] };
+        return db
+          .collection('users')
+          .updateOne(
+            { _id: new mongo.ObjectId(this._id) },
+            { $set: { cart: { items: [] } } }
+          );
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  getOrders() {
+    const db = getDb();
+    return db
+      .collection('orders')
+      .find({ 'user._id': new mongo.ObjectId(this._id) })
+      .toArray(); //check nested props in mongodb
   }
 }
 
